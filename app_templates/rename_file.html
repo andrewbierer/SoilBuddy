@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rename Settings File</title>
+</head>
+<body>
+    <h1>Rename Settings File</h1>
+    <div class="file-list">
+        <h3>Select a file to rename:</h3>
+        {{files}}
+    </div>
+    
+    <form action="/rename-file" method="POST">
+        <label for="old_name">Current Filename:</label><br>
+        <input type="text" id="old_name" name="old_name" required><br>
+        
+        <label for="new_name">New Filename:</label><br>
+        <input type="text" id="new_name" name="new_name" required><br><br>
+        
+        <button type="submit">Rename File</button>
+    </form>
+    
+    <br>
+    <button onclick="window.location.href='/'">Go Home</button>
+    
+    <script>
+        // Make file items clickable to populate the form
+        document.querySelectorAll('.file-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.getElementById('old_name').value = this.textContent.trim();
+                document.getElementById('new_name').value = this.textContent.trim();
+            });
+        });
+    </script>
+</body>
+</html>

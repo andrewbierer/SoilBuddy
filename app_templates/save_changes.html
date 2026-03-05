@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Changes Saved</title>
+    </head>
+    <body>
+        <h1>Changes Saved</h1>
+        <p>Your settings have been successfully updated.</p>
+        
+        <div class="status-box">
+            <h3>Transfer Status</h3>
+            <li>{{ transfer_result }}</li>
+            
+            <h3>SD Card Contents</h3>
+            <div class="file-list">{{ sd_files }}</div>
+        </div>
+        
+        <button id="goHomeBtn">Go to Home</button>
+        
+        <script src="data:text/javascript,document.getElementById('goHomeBtn').onclick = function() { window.location.href = '/'; };" defer></script>
+    </body>
+</html>

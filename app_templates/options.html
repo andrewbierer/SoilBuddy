@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Changing Fields</title>
+    </head>
+<body>
+<h1>Change Settings</h1>
+<form action="/savechanges" method="POST" autocomplete="off" autocapitalize="none" >
+  <label for="timezoneNum">Select Timzeone Integer:</label>
+  <input type="number" id="timezoneNum" name="timezoneNum" value="0" min="0" max ="461">
+  <br><br>
+
+  <label for="deviceID">SoilBuddy DeviceID:</label>
+  <input type="number" id="deviceID" name="deviceID" value="0" min="0" max ="65535">
+  <br><br>
+
+  <label for="sensorCapLower">Sensor Capacitance Lower Limit:</label>
+  <input type="number" id="sensorCapLower" name="sensorCapLower" value="200" min="0" max ="400">
+  <br><br>
+
+  <label for="sensorCapUpper">Sensor Capacitance Upper Limit:</label>
+  <input type="number" id="sensorCapUpper" name="sensorCapUpper" value="2000" min="0" max ="4000">
+  <br><br>
+  
+  <label for="measureInterval">Measure Interval (In Minutes):</label>
+  <input type="number" id="measureInterval" name="measureInterval" value="1" min="1" max ="60">
+  <br><br>
+
+  <label for="databaseServer">Database Server Webaddress:</label>
+  <input type="text" id="databaseServer" name="databaseServer" value = " "> 
+  <br><br>
+
+  <label for="timeSync1">Time Sync. Server 1:</label>
+  <input type="text" id="timeSync1" name="timeSync1" value = " ">
+  <br><br>
+  
+<input type="submit" value="Submit">
+</form>
+<br><br>
+<button onclick="history.back()">Go Home</button>
+<br><br>
+
+<p>Click the "Submit" button to change settings!</p>
+<body>
+</html>
