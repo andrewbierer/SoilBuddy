@@ -1,0 +1,207 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    color: #0056b3; /* USDA blue-ish tone */
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2.2em;
+}
+
+p {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.section-fieldset {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 20px 25px;
+    margin-bottom: 30px;
+    background-color: #fdfdfd;
+}
+
+.section-fieldset legend {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #0056b3;
+    padding: 0 10px;
+    background-color: #fdfdfd;
+    border-radius: 4px;
+}
+
+.group-fieldset {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+}
+
+.group-fieldset legend {
+    font-size: 1.15em;
+    font-weight: bold;
+    color: #007bff; /* A slightly lighter blue for sub-sections */
+    padding: 0 8px;
+    background-color: #ffffff;
+    border-radius: 3px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+    padding: 5px 0;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    margin-right: 8px;
+    vertical-align: middle;
+    transform: scale(1.1); /* Slightly larger checkboxes/radios */
+}
+
+.radio-group label,
+.checkbox-grid label {
+    display: inline-block; /* Keep labels next to their inputs */
+    margin-right: 15px;
+    font-weight: normal;
+    color: #333;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    margin-top: 5px;
+    background-color: #fff;
+}
+
+input[type="number"]:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+select {
+    appearance: none; /* Remove default arrow on select */
+    -webkit-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23444" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+.hint {
+    font-size: 0.9em;
+    color: #6a6a6a;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.method-explanation {
+    font-size: 0.9em;
+    color: #007bff;
+    background-color: #e7f3ff;
+    border-left: 3px solid #007bff;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border-radius: 3px;
+    min-height: 20px; /* Ensure space even if empty */
+}
+
+.wired-sensor-checkboxes {
+    margin-top: 15px;
+    padding: 10px 15px;
+    border: 1px dashed #a0d8ff;
+    background-color: #f0f8ff;
+    border-radius: 4px;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 8px 10px;
+    margin-top: 10px;
+}
+
+.checkbox-grid input[type="checkbox"] + label {
+    margin-right: 0; /* Override default margin for grid */
+}
+
+
+.hidden {
+    display: none;
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: #28a745; /* Green for save action */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 25px;
+    }
+    .section-fieldset {
+        padding: 15px;
+    }
+    .group-fieldset {
+        padding: 10px;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    .checkbox-grid {
+        grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+    }
+    .radio-group label {
+        margin-right: 10px;
+    }
+}
