@@ -1,46 +1,320 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Changing Fields</title>
-    </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDA Open_Irr System Programmer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<h1>Change Settings</h1>
-<form action="/savechanges" method="POST" autocomplete="off" autocapitalize="none" >
-  <label for="timezoneNum">Select Timzeone Integer:</label>
-  <input type="number" id="timezoneNum" name="timezoneNum" value="0" min="0" max ="461">
-  <br><br>
+    <div class="container">
+        <h1>USDA Open_Irr System Programming</h1>
+        <p>Welcome to the Open_Irr System Programmer. Please configure your irrigation settings below.</p>
 
-  <label for="deviceID">SoilBuddy DeviceID:</label>
-  <input type="number" id="deviceID" name="deviceID" value="0" min="0" max ="65535">
-  <br><br>
+        <form id="openIrrForm">
 
-  <label for="sensorCapLower">Sensor Capacitance Lower Limit:</label>
-  <input type="number" id="sensorCapLower" name="sensorCapLower" value="200" min="0" max ="400">
-  <br><br>
+            <!-- Section: Set Measurement Interval -->
+            <fieldset class="section-fieldset">
+                <legend>Set Measurement Interval</legend>
+                <div class="form-group">
+                    <label>Select a default interval or specify a custom one:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="interval15" name="measurementInterval" value="15" checked>
+                        <label for="interval15">15 Minutes</label>
 
-  <label for="sensorCapUpper">Sensor Capacitance Upper Limit:</label>
-  <input type="number" id="sensorCapUpper" name="sensorCapUpper" value="2000" min="0" max ="4000">
-  <br><br>
-  
-  <label for="measureInterval">Measure Interval (In Minutes):</label>
-  <input type="number" id="measureInterval" name="measureInterval" value="1" min="1" max ="60">
-  <br><br>
+                        <input type="radio" id="interval30" name="measurementInterval" value="30">
+                        <label for="interval30">30 Minutes</label>
 
-  <label for="databaseServer">Database Server Webaddress:</label>
-  <input type="text" id="databaseServer" name="databaseServer" value = " "> 
-  <br><br>
+                        <input type="radio" id="interval60" name="measurementInterval" value="60">
+                        <label for="interval60">60 Minutes</label>
 
-  <label for="timeSync1">Time Sync. Server 1:</label>
-  <input type="text" id="timeSync1" name="timeSync1" value = " ">
-  <br><br>
-  
-<input type="submit" value="Submit">
-</form>
-<br><br>
-<button onclick="history.back()">Go Home</button>
-<br><br>
+                        <input type="radio" id="intervalCustomRadio" name="measurementInterval" value="custom">
+                        <label for="intervalCustomRadio">Custom (minutes):</label>
+                        <input type="number" id="intervalCustomInput" name="customInterval" min="1" max="1440" placeholder="e.g., 45" disabled>
+                        <p class="hint">Enter a value between 1 and 1440 minutes (24 hours).</p>
+                    </div>
+                </div>
+            </fieldset>
 
-<p>Click the "Submit" button to change settings!</p>
-<body>
+            <!-- Section: Water Manager (Autonomous Irrigation) -->
+            <fieldset class="section-fieldset">
+                <legend>Water Manager (Autonomous Irrigation)</legend>
+                <div class="form-group">
+                    <label>Enable or disable autonomous irrigation:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="waterManagerOn" name="waterManager" value="on" checked>
+                        <label for="waterManagerOn">ON</label>
+
+                        <input type="radio" id="waterManagerOff" name="waterManager" value="off">
+                        <label for="waterManagerOff">OFF</label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Section: Irrigation Group Settings -->
+            <fieldset class="section-fieldset">
+                <legend>Irrigation Group Settings</legend>
+
+                <!-- Irrigation Group 1 -->
+                <fieldset class="group-fieldset">
+                    <legend>Irrigation Group 1</legend>
+                    <div class="form-group">
+                        <label for="group1Method">Method:</label>
+                        <select id="group1Method" name="group1Method" onchange="updateMethodExplanation(this)">
+                            <option value="">-- Select a Method --</option>
+                            <option value="thresholdWater" title="Threshold water management is a management strategy that triggers an irrigation event only when soil moisture drops below a pre-defined sensor threshold. This technique focuses on soil dryness and would be fixed based on local soil type. The irrigation event triggered by crossing the threshold is customized.">Threshold Water Management</option>
+                            <option value="thresholdMaintenance" title="Threshold maintenance management is a management strategy that attempts to maintain soil moisture at a pre-defined sensor threshold through small but frequent irrigation events. This technique focuses on stabilizing the hydraulic gradient between plants and the local soil.">Threshold Maintenance Management</option>
+                            <option value="maximumDepletion" title="Maximum allowable depletion is a management strategy that references a point, expressed as a percentage of plant available water, where a particular plant is known to experience physiological stresses and potential yield losses. Crossing this point results in irrigating to refill the available soil profile. This technique focuses on crop stress manifestation.">Maximum Allowable Depletion</option>
+                            <option value="scheduled" title="Standard irrigation scheduling through pre-defined events that recur weekly. A non-recurring event may be added to the schedule by date. All pre-defined events can be canceled.">Scheduled Irrigation</option>
+                        </select>
+                        <p class="method-explanation" id="group1MethodExplanation"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="group1Sensors">Sensors:</label>
+                        <select id="group1Sensors" name="group1Sensors" onchange="toggleWiredSensors('group1')">
+                            <option value="">-- Select Sensors --</option>
+                            <option value="wired">Wired Sensors</option>
+                            <!-- Other FCC ID sensors would be populated here dynamically or manually -->
+                            <!-- Example: <option value="FCC12345">Sensor FCC12345</option> -->
+                        </select>
+                        <div id="group1WiredSensors" class="wired-sensor-checkboxes hidden">
+                            <label>Select Wired Sensors (1-16):</label>
+                            <div class="checkbox-grid">
+                                <input type="checkbox" id="group1Sensor1" name="group1WiredSensors[]" value="1"><label for="group1Sensor1">1</label>
+                                <input type="checkbox" id="group1Sensor2" name="group1WiredSensors[]" value="2"><label for="group1Sensor2">2</label>
+                                <input type="checkbox" id="group1Sensor3" name="group1WiredSensors[]" value="3"><label for="group1Sensor3">3</label>
+                                <input type="checkbox" id="group1Sensor4" name="group1WiredSensors[]" value="4"><label for="group1Sensor4">4</label>
+                                <input type="checkbox" id="group1Sensor5" name="group1WiredSensors[]" value="5"><label for="group1Sensor5">5</label>
+                                <input type="checkbox" id="group1Sensor6" name="group1WiredSensors[]" value="6"><label for="group1Sensor6">6</label>
+                                <input type="checkbox" id="group1Sensor7" name="group1WiredSensors[]" value="7"><label for="group1Sensor7">7</label>
+                                <input type="checkbox" id="group1Sensor8" name="group1WiredSensors[]" value="8"><label for="group1Sensor8">8</label>
+                                <input type="checkbox" id="group1Sensor9" name="group1WiredSensors[]" value="9"><label for="group1Sensor9">9</label>
+                                <input type="checkbox" id="group1Sensor10" name="group1WiredSensors[]" value="10"><label for="group1Sensor10">10</label>
+                                <input type="checkbox" id="group1Sensor11" name="group1WiredSensors[]" value="11"><label for="group1Sensor11">11</label>
+                                <input type="checkbox" id="group1Sensor12" name="group1WiredSensors[]" value="12"><label for="group1Sensor12">12</label>
+                                <input type="checkbox" id="group1Sensor13" name="group1WiredSensors[]" value="13"><label for="group1Sensor13">13</label>
+                                <input type="checkbox" id="group1Sensor14" name="group1WiredSensors[]" value="14"><label for="group1Sensor14">14</label>
+                                <input type="checkbox" id="group1Sensor15" name="group1WiredSensors[]" value="15"><label for="group1Sensor15">15</label>
+                                <input type="checkbox" id="group1Sensor16" name="group1WiredSensors[]" value="16"><label for="group1Sensor16">16</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Irrigation Group 2 (Repeat structure for groups 2, 3, 4) -->
+                <fieldset class="group-fieldset">
+                    <legend>Irrigation Group 2</legend>
+                    <div class="form-group">
+                        <label for="group2Method">Method:</label>
+                        <select id="group2Method" name="group2Method" onchange="updateMethodExplanation(this)">
+                            <option value="">-- Select a Method --</option>
+                            <option value="thresholdWater" title="Threshold water management is a management strategy that triggers an irrigation event only when soil moisture drops below a pre-defined sensor threshold. This technique focuses on soil dryness and would be fixed based on local soil type. The irrigation event triggered by crossing the threshold is customized.">Threshold Water Management</option>
+                            <option value="thresholdMaintenance" title="Threshold maintenance management is a management strategy that attempts to maintain soil moisture at a pre-defined sensor threshold through small but frequent irrigation events. This technique focuses on stabilizing the hydraulic gradient between plants and the local soil.">Threshold Maintenance Management</option>
+                            <option value="maximumDepletion" title="Maximum allowable depletion is a management strategy that references a point, expressed as a percentage of plant available water, where a particular plant is known to experience physiological stresses and potential yield losses. Crossing this point results in irrigating to refill the available soil profile. This technique focuses on crop stress manifestation.">Maximum Allowable Depletion</option>
+                            <option value="scheduled" title="Standard irrigation scheduling through pre-defined events that recur weekly. A non-recurring event may be added to the schedule by date. All pre-defined events can be canceled.">Scheduled Irrigation</option>
+                        </select>
+                        <p class="method-explanation" id="group2MethodExplanation"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="group2Sensors">Sensors:</label>
+                        <select id="group2Sensors" name="group2Sensors" onchange="toggleWiredSensors('group2')">
+                            <option value="">-- Select Sensors --</option>
+                            <option value="wired">Wired Sensors</option>
+                        </select>
+                        <div id="group2WiredSensors" class="wired-sensor-checkboxes hidden">
+                            <label>Select Wired Sensors (1-16):</label>
+                            <div class="checkbox-grid">
+                                <input type="checkbox" id="group2Sensor1" name="group2WiredSensors[]" value="1"><label for="group2Sensor1">1</label>
+                                <input type="checkbox" id="group2Sensor2" name="group2WiredSensors[]" value="2"><label for="group2Sensor2">2</label>
+                                <input type="checkbox" id="group2Sensor3" name="group2WiredSensors[]" value="3"><label for="group2Sensor3">3</label>
+                                <input type="checkbox" id="group2Sensor4" name="group2WiredSensors[]" value="4"><label for="group2Sensor4">4</label>
+                                <input type="checkbox" id="group2Sensor5" name="group2WiredSensors[]" value="5"><label for="group2Sensor5">5</label>
+                                <input type="checkbox" id="group2Sensor6" name="group2WiredSensors[]" value="6"><label for="group2Sensor6">6</label>
+                                <input type="checkbox" id="group2Sensor7" name="group2WiredSensors[]" value="7"><label for="group2Sensor7">7</label>
+                                <input type="checkbox" id="group2Sensor8" name="group2WiredSensors[]" value="8"><label for="group2Sensor8">8</label>
+                                <input type="checkbox" id="group2Sensor9" name="group2WiredSensors[]" value="9"><label for="group2Sensor9">9</label>
+                                <input type="checkbox" id="group2Sensor10" name="group2WiredSensors[]" value="10"><label for="group2Sensor10">10</label>
+                                <input type="checkbox" id="group2Sensor11" name="group2WiredSensors[]" value="11"><label for="group2Sensor11">11</label>
+                                <input type="checkbox" id="group2Sensor12" name="group2WiredSensors[]" value="12"><label for="group2Sensor12">12</label>
+                                <input type="checkbox" id="group2Sensor13" name="group2WiredSensors[]" value="13"><label for="group2Sensor13">13</label>
+                                <input type="checkbox" id="group2Sensor14" name="group2WiredSensors[]" value="14"><label for="group2Sensor14">14</label>
+                                <input type="checkbox" id="group2Sensor15" name="group2WiredSensors[]" value="15"><label for="group2Sensor15">15</label>
+                                <input type="checkbox" id="group2Sensor16" name="group2WiredSensors[]" value="16"><label for="group2Sensor16">16</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Irrigation Group 3 -->
+                <fieldset class="group-fieldset">
+                    <legend>Irrigation Group 3</legend>
+                    <div class="form-group">
+                        <label for="group3Method">Method:</label>
+                        <select id="group3Method" name="group3Method" onchange="updateMethodExplanation(this)">
+                            <option value="">-- Select a Method --</option>
+                            <option value="thresholdWater" title="Threshold water management is a management strategy that triggers an irrigation event only when soil moisture drops below a pre-defined sensor threshold. This technique focuses on soil dryness and would be fixed based on local soil type. The irrigation event triggered by crossing the threshold is customized.">Threshold Water Management</option>
+                            <option value="thresholdMaintenance" title="Threshold maintenance management is a management strategy that attempts to maintain soil moisture at a pre-defined sensor threshold through small but frequent irrigation events. This technique focuses on stabilizing the hydraulic gradient between plants and the local soil.">Threshold Maintenance Management</option>
+                            <option value="maximumDepletion" title="Maximum allowable depletion is a management strategy that references a point, expressed as a percentage of plant available water, where a particular plant is known to experience physiological stresses and potential yield losses. Crossing this point results in irrigating to refill the available soil profile. This technique focuses on crop stress manifestation.">Maximum Allowable Depletion</option>
+                            <option value="scheduled" title="Standard irrigation scheduling through pre-defined events that recur weekly. A non-recurring event may be added to the schedule by date. All pre-defined events can be canceled.">Scheduled Irrigation</option>
+                        </select>
+                        <p class="method-explanation" id="group3MethodExplanation"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="group3Sensors">Sensors:</label>
+                        <select id="group3Sensors" name="group3Sensors" onchange="toggleWiredSensors('group3')">
+                            <option value="">-- Select Sensors --</option>
+                            <option value="wired">Wired Sensors</option>
+                        </select>
+                        <div id="group3WiredSensors" class="wired-sensor-checkboxes hidden">
+                            <label>Select Wired Sensors (1-16):</label>
+                            <div class="checkbox-grid">
+                                <input type="checkbox" id="group3Sensor1" name="group3WiredSensors[]" value="1"><label for="group3Sensor1">1</label>
+                                <input type="checkbox" id="group3Sensor2" name="group3WiredSensors[]" value="2"><label for="group3Sensor2">2</label>
+                                <input type="checkbox" id="group3Sensor3" name="group3WiredSensors[]" value="3"><label for="group3Sensor3">3</label>
+                                <input type="checkbox" id="group3Sensor4" name="group3WiredSensors[]" value="4"><label for="group3Sensor4">4</label>
+                                <input type="checkbox" id="group3Sensor5" name="group3WiredSensors[]" value="5"><label for="group3Sensor5">5</label>
+                                <input type="checkbox" id="group3Sensor6" name="group3WiredSensors[]" value="6"><label for="group3Sensor6">6</label>
+                                <input type="checkbox" id="group3Sensor7" name="group3WiredSensors[]" value="7"><label for="group3Sensor7">7</label>
+                                <input type="checkbox" id="group3Sensor8" name="group3WiredSensors[]" value="8"><label for="group3Sensor8">8</label>
+                                <input type="checkbox" id="group3Sensor9" name="group3WiredSensors[]" value="9"><label for="group3Sensor9">9</label>
+                                <input type="checkbox" id="group3Sensor10" name="group3WiredSensors[]" value="10"><label for="group3Sensor10">10</label>
+                                <input type="checkbox" id="group3Sensor11" name="group3WiredSensors[]" value="11"><label for="group3Sensor11">11</label>
+                                <input type="checkbox" id="group3Sensor12" name="group3WiredSensors[]" value="12"><label for="group3Sensor12">12</label>
+                                <input type="checkbox" id="group3Sensor13" name="group3WiredSensors[]" value="13"><label for="group3Sensor13">13</label>
+                                <input type="checkbox" id="group3Sensor14" name="group3WiredSensors[]" value="14"><label for="group3Sensor14">14</label>
+                                <input type="checkbox" id="group3Sensor15" name="group3WiredSensors[]" value="15"><label for="group3Sensor15">15</label>
+                                <input type="checkbox" id="group3Sensor16" name="group3WiredSensors[]" value="16"><label for="group3Sensor16">16</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Irrigation Group 4 -->
+                <fieldset class="group-fieldset">
+                    <legend>Irrigation Group 4</legend>
+                    <div class="form-group">
+                        <label for="group4Method">Method:</label>
+                        <select id="group4Method" name="group4Method" onchange="updateMethodExplanation(this)">
+                            <option value="">-- Select a Method --</option>
+                            <option value="thresholdWater" title="Threshold water management is a management strategy that triggers an irrigation event only when soil moisture drops below a pre-defined sensor threshold. This technique focuses on soil dryness and would be fixed based on local soil type. The irrigation event triggered by crossing the threshold is customized.">Threshold Water Management</option>
+                            <option value="thresholdMaintenance" title="Threshold maintenance management is a management strategy that attempts to maintain soil moisture at a pre-defined sensor threshold through small but frequent irrigation events. This technique focuses on stabilizing the hydraulic gradient between plants and the local soil.">Threshold Maintenance Management</option>
+                            <option value="maximumDepletion" title="Maximum allowable depletion is a management strategy that references a point, expressed as a percentage of plant available water, where a particular plant is known to experience physiological stresses and potential yield losses. Crossing this point results in irrigating to refill the available soil profile. This technique focuses on crop stress manifestation.">Maximum Allowable Depletion</option>
+                            <option value="scheduled" title="Standard irrigation scheduling through pre-defined events that recur weekly. A non-recurring event may be added to the schedule by date. All pre-defined events can be canceled.">Scheduled Irrigation</option>
+                        </select>
+                        <p class="method-explanation" id="group4MethodExplanation"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="group4Sensors">Sensors:</label>
+                        <select id="group4Sensors" name="group4Sensors" onchange="toggleWiredSensors('group4')">
+                            <option value="">-- Select Sensors --</option>
+                            <option value="wired">Wired Sensors</option>
+                        </select>
+                        <div id="group4WiredSensors" class="wired-sensor-checkboxes hidden">
+                            <label>Select Wired Sensors (1-16):</label>
+                            <div class="checkbox-grid">
+                                <input type="checkbox" id="group4Sensor1" name="group4WiredSensors[]" value="1"><label for="group4Sensor1">1</label>
+                                <input type="checkbox" id="group4Sensor2" name="group4WiredSensors[]" value="2"><label for="group4Sensor2">2</label>
+                                <input type="checkbox" id="group4Sensor3" name="group4WiredSensors[]" value="3"><label for="group4Sensor3">3</label>
+                                <input type="checkbox" id="group4Sensor4" name="group4WiredSensors[]" value="4"><label for="group4Sensor4">4</label>
+                                <input type="checkbox" id="group4Sensor5" name="group4WiredSensors[]" value="5"><label for="group4Sensor5">5</label>
+                                <input type="checkbox" id="group4Sensor6" name="group4WiredSensors[]" value="6"><label for="group4Sensor6">6</label>
+                                <input type="checkbox" id="group4Sensor7" name="group4WiredSensors[]" value="7"><label for="group4Sensor7">7</label>
+                                <input type="checkbox" id="group4Sensor8" name="group4WiredSensors[]" value="8"><label for="group4Sensor8">8</label>
+                                <input type="checkbox" id="group4Sensor9" name="group4WiredSensors[]" value="9"><label for="group4Sensor9">9</label>
+                                <input type="checkbox" id="group4Sensor10" name="group4WiredSensors[]" value="10"><label for="group4Sensor10">10</label>
+                                <input type="checkbox" id="group4Sensor11" name="group4WiredSensors[]" value="11"><label for="group4Sensor11">11</label>
+                                <input type="checkbox" id="group4Sensor12" name="group4WiredSensors[]" value="12"><label for="group4Sensor12">12</label>
+                                <input type="checkbox" id="group4Sensor13" name="group4WiredSensors[]" value="13"><label for="group4Sensor13">13</label>
+                                <input type="checkbox" id="group4Sensor14" name="group4WiredSensors[]" value="14"><label for="group4Sensor14">14</label>
+                                <input type="checkbox" id="group4Sensor15" name="group4WiredSensors[]" value="15"><label for="group4Sensor15">15</label>
+                                <input type="checkbox" id="group4Sensor16" name="group4WiredSensors[]" value="16"><label for="group4Sensor16">16</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+            </fieldset>
+
+            <button type="submit">Save Settings</button>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript for dynamic functionality
+
+        // 1. Custom Measurement Interval
+        const intervalRadios = document.querySelectorAll('input[name="measurementInterval"]');
+        const customIntervalInput = document.getElementById('intervalCustomInput');
+
+        intervalRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customIntervalInput.disabled = false;
+                    customIntervalInput.focus();
+                } else {
+                    customIntervalInput.disabled = true;
+                    customIntervalInput.value = ''; // Clear custom value if not selected
+                }
+            });
+        });
+
+        // 2. Method Explanation Display
+        function updateMethodExplanation(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const explanationParagraphId = selectElement.id + 'Explanation';
+            const explanationParagraph = document.getElementById(explanationParagraphId);
+
+            if (selectedOption && selectedOption.title) {
+                explanationParagraph.textContent = selectedOption.title;
+            } else {
+                explanationParagraph.textContent = '';
+            }
+        }
+
+        // Initialize explanations on page load in case of pre-selected options
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('select[name$="Method"]').forEach(select => {
+                updateMethodExplanation(select);
+            });
+        });
+
+
+        // 3. Toggle Wired Sensors Checkboxes
+        function toggleWiredSensors(groupId) {
+            const sensorSelect = document.getElementById(`${groupId}Sensors`);
+            const wiredSensorsDiv = document.getElementById(`${groupId}WiredSensors`);
+
+            if (sensorSelect.value === 'wired') {
+                wiredSensorsDiv.classList.remove('hidden');
+            } else {
+                wiredSensorsDiv.classList.add('hidden');
+                // Optional: Uncheck all wired sensors if they are hidden
+                wiredSensorsDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            }
+        }
+
+        // Initialize wired sensors visibility on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleWiredSensors('group1');
+            toggleWiredSensors('group2');
+            toggleWiredSensors('group3');
+            toggleWiredSensors('group4');
+        });
+
+        // Basic form submission handler (for demonstration)
+        document.getElementById('openIrrForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            alert('Form submitted! (In a real application, data would be sent to a server.)');
+            // Here you would typically collect form data and send it via AJAX or a full form submit
+            // Example of collecting data:
+            // const formData = new FormData(this);
+            // for (let [key, value] of formData.entries()) {
+            //     console.log(`${key}: ${value}`);
+            // }
+        });
+    </script>
+</body>
 </html>
