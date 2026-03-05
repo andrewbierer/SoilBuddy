@@ -1,0 +1,9 @@
+venv/
+.vscode/
+.DS_Store
+.micropico
+*.bak
+*.tmp
+*.log
+*.swp
+*.pyc
